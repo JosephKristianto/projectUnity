@@ -1,7 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class VRNoteBlock : Note
 {
@@ -16,10 +18,12 @@ public class VRNoteBlock : Note
     bool isDestroyed;
 
     public float dissolveTimer;
+    
     public void InitializeBlock(bool left)
     {
 
         selectedBlock = left ? blueBlock : redBlock;
+        gameObject.layer = LayerMask.NameToLayer(left ? "Blue Block" : "Red Block");
         selectedBlock.SetActive(true);
     }
     // Update is called once per frame
@@ -40,15 +44,42 @@ public class VRNoteBlock : Note
 
     private void OnCollisionEnter(Collision collision)
     {
+        if (isDestroyed)
+            return;
+        
 
-        StartCoroutine(IE_Destroy());
+        StartCoroutine(IE_Destroy(collision));
     }
 
-    public IEnumerator IE_Destroy()
+    public IEnumerator IE_Destroy(Collision collision)
     {
         isDestroyed = true;
         yield return null;
+
+        bool isCorrect = false;
+        if (LayerMask.LayerToName(gameObject.layer) == "Blue Block" && LayerMask.LayerToName(collision.gameObject.layer) == "Blue Hand")
+        {
+            isCorrect = true;
+        }
+
+        if (LayerMask.LayerToName(gameObject.layer) == "Red Block" && LayerMask.LayerToName(collision.gameObject.layer) == "Red Hand")
+        {
+            isCorrect = true;
+        }
+
+        if (!isCorrect)
+        {
+            selectedBlock.GetComponentInChildren<TMP_Text>(true).gameObject.SetActive(true);
+            selectedBlock.GetComponentInChildren<Image>(true).gameObject.SetActive(false);
+        }
+
+       
         GetComponent<Rigidbody>().isKinematic = false;  
+        //GetComponent<Rigidbody>().useGravity = true;
+        ContactPoint contact = collision.contacts[0];
+        Vector3 forceDirection = -collision.relativeVelocity.normalized;
+        GetComponent<Rigidbody>().AddForceAtPosition(forceDirection * 5, contact.point, ForceMode.Impulse);
+
         yield return null;
 
         float time = 0;

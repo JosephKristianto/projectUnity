@@ -21,15 +21,15 @@ TagManager:
   - Player
   - Grabbable
   - Lever
-  - VisualSensor
-  - AI_Stimulation_Enemy
-  - AI_Stimulation_Player
-  - IgnoreCollision
-  - Dropzone_Trigger
-  - LaserSword
-  - GrabCollider
-  - Wall
-  - HeadCollider
+  - Blue Block
+  - Red Block
+  - Blue Hand
+  - Red Hand
+  - 
+  - 
+  - 
+  - 
+  - 
   - 
   - 
   - 

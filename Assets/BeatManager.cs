@@ -38,7 +38,6 @@ public class BeatManager : MonoBehaviour
     public GameObject notePrefab;  // Prefab for the notes
     public Transform[] spawnPoints; // The spawn positions for notes (e.g. 5 lanes)
     public float noteSpeed = 5f;  // Speed at which the note moves
-    public AudioSource musicSource;  // Reference to the music
     public List<NoteTime> noteTimes;  // List of beat times (seconds) when notes should appear
 
     private int noteIndex = 0;
@@ -99,7 +98,6 @@ public class BeatManager : MonoBehaviour
 
       
 
-        musicSource.Play();
 
 
     }
