@@ -18,7 +18,8 @@ namespace VRBeats
     public enum ColorSide
     {
         Left,
-        Right
+        Right,
+        Twin
     }
 
 
@@ -32,5 +33,6 @@ namespace VRBeats
         public Vector3 rotation = Vector3.zero;
         public float speed = 2.0f;
         public int speedMultiplier = 1;
+        public int twinLane = 1;
     }
 }

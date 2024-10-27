@@ -9,12 +9,15 @@ namespace VRBeats
     {
         [SerializeField] private GameObject arrow = null;
         [SerializeField] private GameObject dot = null;
-        [SerializeField] private Spark sparkPrefab = null;        
+        [SerializeField] private Spark sparkPrefab = null;
         [SerializeField] private ColorSide colorSide = ColorSide.Left;
+        [SerializeField] private int twinLane = 0;
         [SerializeField] private bool useSpark = false;
-        
+
         public ColorSide ColorSide { get { return colorSide; } }
-        public Direction HitDirection { get { return hitDirection;  } }
+        public int TwinLane { get { return twinLane; } }
+
+        public Direction HitDirection { get { return hitDirection; } }
 
         private Direction hitDirection = Direction.Center;
 
@@ -25,7 +28,7 @@ namespace VRBeats
             if (useSpark)
             {
                 if (sparkPrefab == null) return;
-                
+
                 Color desireColor = VR_BeatManager.instance.GetColorFromColorSide(colorSide);
                 Spark spark = Instantiate(sparkPrefab, transform.position, Quaternion.identity);
                 spark.transform.parent = transform;
@@ -37,19 +40,19 @@ namespace VRBeats
         public override void Construct(SpawnEventInfo info)
         {
             base.Construct(info);
-            
+
             transform.rotation = CalculateRotationFromDirection(info.hitDirection);
             colorSide = info.colorSide;
             useSpark = info.useSpark;
             hitDirection = info.hitDirection;
 
             //use the arrow of the center
-            arrow.SetActive( info.hitDirection != Direction.Center );
-            dot.SetActive( info.hitDirection == Direction.Center );
+            arrow.SetActive(info.hitDirection != Direction.Center);
+            dot.SetActive(info.hitDirection == Direction.Center);
 
         }
 
-        
+
         private Quaternion CalculateRotationFromDirection(Direction dir)
         {
             Vector3 rot = Vector3.zero;
@@ -100,11 +103,12 @@ namespace VRBeats
         private bool updateHitDir = false;
         private bool updateUseSpark = false;
         private bool updateColorSide = false;
+        private bool updateTwinLane = false;
 
 
         private void LoadArrowTextures()
         {
-           
+
             texArray = new Texture[textureNameArray.Length];
             for (int n = 0; n < texArray.Length; n++)
             {
@@ -112,33 +116,39 @@ namespace VRBeats
             }
         }
 
-        public override void CustomInspector(SpawnEventInfo info , Object[] targets)
+        public override void CustomInspector(SpawnEventInfo info, Object[] targets)
         {
             EditorGUI.BeginChangeCheck();
 
             LoadArrowTextures();
 
             EditorGUI.BeginChangeCheck();
-            info.hitDirection = DrawArrowGridInspector("" , info.hitDirection);
+            info.hitDirection = DrawArrowGridInspector("", info.hitDirection);
             if (EditorGUI.EndChangeCheck())
             {
                 updateHitDir = true;
             }
 
-            base.CustomInspector(info , targets);
+            base.CustomInspector(info, targets);
 
             EditorGUI.BeginChangeCheck();
-            info.useSpark = EditorGUILayout.Toggle("Use Spark" , info.useSpark);
+            info.useSpark = EditorGUILayout.Toggle("Use Spark", info.useSpark);
             if (EditorGUI.EndChangeCheck())
             {
                 updateUseSpark = true;
             }
 
             EditorGUI.BeginChangeCheck();
-            info.colorSide = (ColorSide) EditorGUILayout.EnumPopup("Color Side" , info.colorSide);
+            info.colorSide = (ColorSide)EditorGUILayout.EnumPopup("Color Side", info.colorSide);
             if (EditorGUI.EndChangeCheck())
             {
                 updateColorSide = true;
+            }
+
+            info.twinLane = (int)EditorGUILayout.IntField("Twin Lane", info.twinLane);
+            if (EditorGUI.EndChangeCheck())
+            {
+                updateTwinLane = true;
             }
 
             /*manual assignment here, remember to check that the selected objects

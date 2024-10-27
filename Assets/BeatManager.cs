@@ -26,7 +26,8 @@ public class BeatManager : MonoBehaviour
             Left, Right
         }
         public int lane;
-        public Side side;
+        public ColorSide side;
+        public int twinLane;
     }
 
     public class NoteTimeWrapper
@@ -76,11 +77,13 @@ public class BeatManager : MonoBehaviour
                         {
                             if (noteTimes.Find(x => x.time == (float)clip.time) != null)
                             {
-                                noteTimes.Find(x => x.time == (float)clip.time).blocks.Add(new Block() { lane = laneCounter, side= marker.spawInfo.colorSide == ColorSide.Left ? Block.Side.Left: Block.Side.Right});
+                                noteTimes.Find(x => x.time == (float)clip.time).blocks.Add(new Block() { lane = laneCounter, side = marker.spawInfo.colorSide , twinLane = marker.spawInfo.twinLane });
                             }
                             else
                             {
-                                noteTimes.Add(new NoteTime() { time = (float)clip.time, blocks = new List<Block>() { new Block() { lane = laneCounter , side = marker.spawInfo.colorSide == ColorSide.Left ? Block.Side.Left : Block.Side.Right } } });
+                                noteTimes.Add(new NoteTime() { time = (float)clip.time, blocks = new List<Block>() { new Block() { lane = laneCounter, side = marker.spawInfo.colorSide, twinLane = marker.spawInfo.twinLane } } });
+
+                                
                             }
                         }
                    
@@ -91,6 +94,8 @@ public class BeatManager : MonoBehaviour
 
                 }
             }
+
+
 
             noteTimes = noteTimes.OrderBy(x => x.time).ToList();
         }
@@ -136,9 +141,24 @@ public class BeatManager : MonoBehaviour
 
         foreach(var block in noteTimes[noteIndex].blocks)
         {
-            GameObject note = Instantiate(notePrefab, spawnPoints[block.lane].position, Quaternion.identity);
-            note.GetComponent<Note>().Initialize(noteSpeed);
-            note.GetComponent<VRNoteBlock>().InitializeBlock(block.side == Block.Side.Left);
+            if(block.side == ColorSide.Twin)
+            {
+                GameObject note1 = Instantiate(notePrefab, spawnPoints[block.lane].position, Quaternion.identity);
+                GameObject note2 = Instantiate(notePrefab, spawnPoints[block.twinLane].position, Quaternion.identity);
+
+                note1.GetComponent<Note>().Initialize(noteSpeed);
+                note1.GetComponent<VRNoteBlock>().InitializeBlock(block.side , note2); 
+                
+                note2.GetComponent<Note>().Initialize(noteSpeed);
+                note2.GetComponent<VRNoteBlock>().InitializeBlock(block.side , note1);
+            }
+            else
+            {
+                GameObject note = Instantiate(notePrefab, spawnPoints[block.lane].position, Quaternion.identity);
+                note.GetComponent<Note>().Initialize(noteSpeed);
+                note.GetComponent<VRNoteBlock>().InitializeBlock(block.side);
+            }
+            
         }
     
     }

@@ -676,6 +676,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: XR Device Simulator
       objectReference: {fileID: 0}
+    - target: {fileID: 6598815579406187037, guid: 18ddb545287c546e19cc77dc9fbb2189,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1275,7 +1280,6 @@ MonoBehaviour:
   - {fileID: 511917778}
   - {fileID: 1847470032}
   noteSpeed: 5
-  musicSource: {fileID: 1216244556}
   noteTimes: []
   musicTimeTMP: {fileID: 743153660}
   noteJsonConvert: 
@@ -1435,7 +1439,7 @@ PlayableDirector:
   m_GameObject: {fileID: 1216244553}
   m_Enabled: 1
   serializedVersion: 3
-  m_PlayableAsset: {fileID: 11400000, guid: 3b7bd28e99b61514f805274b82999284, type: 2}
+  m_PlayableAsset: {fileID: 11400000, guid: 3c7df33f8b45a244c96aad329c9561ea, type: 2}
   m_InitialState: 1
   m_WrapMode: 2
   m_DirectorUpdateMode: 1
@@ -1453,6 +1457,18 @@ PlayableDirector:
     value: {fileID: 65281057}
   - key: {fileID: -5783450688455785084, guid: 3b7bd28e99b61514f805274b82999284, type: 2}
     value: {fileID: 1371090184}
+  - key: {fileID: 2676407616228987893, guid: 3c7df33f8b45a244c96aad329c9561ea, type: 2}
+    value: {fileID: 1216244556}
+  - key: {fileID: -6434951530174840053, guid: 3c7df33f8b45a244c96aad329c9561ea, type: 2}
+    value: {fileID: 0}
+  - key: {fileID: -3129673002988865675, guid: 3c7df33f8b45a244c96aad329c9561ea, type: 2}
+    value: {fileID: 0}
+  - key: {fileID: 7691053620411892488, guid: 3c7df33f8b45a244c96aad329c9561ea, type: 2}
+    value: {fileID: 0}
+  - key: {fileID: -5173647472620412896, guid: 3c7df33f8b45a244c96aad329c9561ea, type: 2}
+    value: {fileID: 0}
+  - key: {fileID: -5783450688455785084, guid: 3c7df33f8b45a244c96aad329c9561ea, type: 2}
+    value: {fileID: 0}
   m_ExposedReferences:
     m_References: []
 --- !u!1001 &1235219544
