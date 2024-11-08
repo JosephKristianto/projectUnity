@@ -19,7 +19,9 @@ namespace VRBeats
     {
         Left,
         Right,
-        Twin
+        Twin,
+        GripL,
+        GripR,
     }
 
 
@@ -34,5 +36,6 @@ namespace VRBeats
         public float speed = 2.0f;
         public int speedMultiplier = 1;
         public int twinLane = 1;
+        public int gripLong = 1;
     }
 }

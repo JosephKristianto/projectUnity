@@ -104,6 +104,7 @@ namespace VRBeats
         private bool updateUseSpark = false;
         private bool updateColorSide = false;
         private bool updateTwinLane = false;
+        private bool updateGripLong = false;
 
 
         private void LoadArrowTextures()
@@ -151,6 +152,11 @@ namespace VRBeats
                 updateTwinLane = true;
             }
 
+            info.gripLong = (int)EditorGUILayout.IntField("Grip Long", info.gripLong);
+            if (EditorGUI.EndChangeCheck())
+            {
+                updateGripLong = true;
+            }
             /*manual assignment here, remember to check that the selected objects
                   are in fact of the appropriate type.*/
             foreach (Object obj in targets)

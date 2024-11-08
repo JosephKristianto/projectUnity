@@ -16,6 +16,9 @@ public class VRNoteBlock : Note
     public GameObject blueBlock;
     public GameObject redBlock;
 
+    public GameObject blueGripBlock;
+    public GameObject redGripBlock;
+
     public GameObject twinBlock;
 
     bool isDestroyed;
@@ -27,8 +30,12 @@ public class VRNoteBlock : Note
     public bool colliding;
     private ColorSide blockType;
 
+    public Material gripBlockMaterial;
 
-    public void InitializeBlock(ColorSide type , GameObject twin = null)
+    [Header("Grip")]
+    public GameObject gripEnd;
+
+    public void InitializeBlock(ColorSide type , GameObject twin = null , int gripLong = 0)
     {
         if(type == ColorSide.Twin)
         {
@@ -37,8 +44,33 @@ public class VRNoteBlock : Note
             gameObject.layer = LayerMask.NameToLayer("Twin Block");
 
             selectedBlock.SetActive(true);
-            CreateLine();
+            CreateLine(twin);
             blockType = type ;
+        }
+        else if(type == ColorSide.GripL || type == ColorSide.GripR)
+        {
+            transform.GetComponent<BoxCollider>().size = new Vector3(0.4f, 0.4f, 0.6f);
+            selectedBlock = type == ColorSide.GripL ? blueGripBlock : redGripBlock;
+            gripEnd = Instantiate(selectedBlock);
+            gripEnd.transform.SetParent(transform);
+            var collider = gripEnd.AddComponent<BoxCollider>();
+            collider.isTrigger = true;
+            collider.size += new Vector3(0.5f, 0.5f, 0.5f);
+            gripEnd.AddComponent<ReleaseGripBlock>();
+            gripEnd.GetComponent<ReleaseGripBlock>().nearMaterial = gripBlockMaterial;
+            gripEnd.transform.localPosition = selectedBlock.transform.localPosition;
+            gripEnd.transform.GetComponent<BoxCollider>().size = new Vector3(2, 2, 6);
+
+            gripEnd.transform.localPosition += (Vector3.forward * (gripLong+1));
+            gripEnd.layer = LayerMask.NameToLayer(type == ColorSide.GripL ? "Blue Block" : "Red Block");
+
+
+            gameObject.layer = LayerMask.NameToLayer(type == ColorSide.GripL ? "Blue Block" : "Red Block");
+            selectedBlock.SetActive(true);
+            gripEnd.SetActive(true);
+            blockType = type;
+            CreateLine(gripEnd);
+
         }
         else
         {
@@ -59,26 +91,44 @@ public class VRNoteBlock : Note
             transform.Translate(Vector3.back * speed * Time.deltaTime);  // Move note downward
 
             // Destroy note if it goes off-screen
-            if (transform.position.z < -5f )
+            if (blockType == ColorSide.GripL || blockType == ColorSide.GripR) 
             {
-                Miss(); 
-            }
+                if (gripEnd != null)
+                {
+                    if(gripEnd.transform.position.z < 0)
+                    {
+                        EndOfLifetime();
 
-         
+                    }
+                }
+            }
+            else
+            {
+                if (transform.position.z < -5f)
+                {
+                    EndOfLifetime();
+
+                }
+            }
+           
+
+
         }
       
     }
 
-    private void OnCollisionEnter(Collision collision)
+    private void OnTriggerEnter(Collider collision)
     {
         if (isDestroyed)
+            return;   
+        if (isColliding)
             return;
         colliding = true;
 
         StartCoroutine(IE_Destroy(collision));
     }
 
-    private void OnCollisionExit(Collision collision)
+    private void OnTriggerExit(Collider collision)
     {
         if (isDestroyed) 
             return;
@@ -87,17 +137,24 @@ public class VRNoteBlock : Note
 
     }
 
-    public void Miss()
+    public void EndOfLifetime()
     {
-        Destroy(gameObject);
+        EndOfLife = true;
+
+          Destroy(gameObject);
+            GameManager.Instance.SetAnswer(isCorrect);
+        
 
     }
 
-    public IEnumerator IE_Destroy(Collision collision)
+    public bool isColliding = false;
+    public bool EndOfLife = false;
+    public bool isCorrect = false;
+    public bool isGripped = false;
+    public IEnumerator IE_Destroy(Collider collision)
     {
-        bool isCorrect = false;
-
-        if(blockType == ColorSide.Twin)
+        isColliding = true; ;
+        if (blockType == ColorSide.Twin)
         {
             yield return new WaitUntil(() => twin.GetComponent<VRNoteBlock>().colliding == true);
             isDestroyed = true;
@@ -105,6 +162,81 @@ public class VRNoteBlock : Note
             yield return null;
 
             isCorrect = true;
+
+        }
+        else if (blockType == ColorSide.GripL || blockType == ColorSide.GripR)
+        {
+            bool isCollidingCorrect =  false;
+            if (LayerMask.LayerToName(gameObject.layer) == "Blue Block" && LayerMask.LayerToName(collision.gameObject.layer) == "Blue Hand")
+            {
+                isCollidingCorrect = true;
+                isGripped = true;
+
+            }
+
+            if (LayerMask.LayerToName(gameObject.layer) == "Red Block" && LayerMask.LayerToName(collision.gameObject.layer) == "Red Hand")
+            {
+                isCollidingCorrect = true;
+                isGripped = true;
+            }
+            if (isCollidingCorrect)
+            {
+                yield return new WaitUntil(() => collision.GetComponent<HandAnimator>().isGripping == false);
+                yield return new WaitUntil(() => collision.GetComponent<HandAnimator>().isGripping == true);
+                var routine = StartCoroutine(IE_FollowLine(collision.transform));
+
+                float internalTime = 0;
+                while (internalTime <= dissolveTimer)
+                {
+                    foreach (var material in selectedBlock.GetComponent<MeshRenderer>().materials)
+                    {
+                        material.SetFloat("_cutoff", internalTime / dissolveTimer);
+                    }
+
+                    internalTime += Time.deltaTime;
+                    yield return null;
+                }
+
+                while (true)
+                {
+                    if (collision.GetComponent<HandAnimator>().isGripping == false)
+                    {
+                        yield return null;  
+                        yield return null;
+                        isCorrect = gripEnd.GetComponent<ReleaseGripBlock>().isReleased;
+
+                        StopCoroutine(routine);
+                        lineRenderer.gameObject.SetActive(false) ;
+
+                        float gripEndTime = 0;
+                        while (gripEndTime <= dissolveTimer)
+                        {
+                            foreach (var material in selectedBlock.GetComponent<MeshRenderer>().materials)
+                            {
+                                material.SetFloat("_cutoff", gripEndTime / dissolveTimer);
+                            }
+
+                            gripEndTime += Time.deltaTime;
+                            yield return null;
+                        }
+                        break;
+
+                    }
+
+                    yield return null;
+                }
+
+                isDestroyed = true;
+                yield return null;
+
+            }
+            else
+            {
+                isCorrect = false;
+                isDestroyed = true;
+
+            }
+
 
         }
         else
@@ -132,15 +264,30 @@ public class VRNoteBlock : Note
             selectedBlock.GetComponentInChildren<TMP_Text>(true).gameObject.SetActive(true);
             selectedBlock.GetComponentInChildren<Image>(true).gameObject.SetActive(false);
         }
+        else
+        {
+        }
 
+        GameManager.Instance.SetAnswer(isCorrect);
+
+        if (blockType == ColorSide.GripL || blockType == ColorSide.GripR) 
+        {
+
+        }
+        else
+        {
+            GetComponent<Rigidbody>().isKinematic = false;
+            GetComponent<Rigidbody>().useGravity = true;
+
+            Vector3 contactPoint = collision.ClosestPoint(transform.position);
+            Vector3 forceDirection = (contactPoint - transform.position).normalized;
+
+
+            GetComponent<Rigidbody>().AddForceAtPosition(forceDirection * -3, contactPoint, ForceMode.Impulse);
+
+            yield return null;
+        }
        
-        GetComponent<Rigidbody>().isKinematic = false;  
-        //GetComponent<Rigidbody>().useGravity = true;
-        ContactPoint contact = collision.contacts[0];
-        Vector3 forceDirection = -collision.relativeVelocity.normalized;
-        GetComponent<Rigidbody>().AddForceAtPosition(forceDirection * 5, contact.point, ForceMode.Impulse);
-
-        yield return null;
 
         float time = 0;
 
@@ -166,7 +313,7 @@ public class VRNoteBlock : Note
 
     private LineRenderer lineRenderer;
 
-    void CreateLine()
+    void CreateLine(GameObject target)
     {
         // Create a new GameObject and attach a LineRenderer component
         GameObject lineObject = new GameObject("LineRendererObject");
@@ -185,11 +332,25 @@ public class VRNoteBlock : Note
         // Set the initial points of the line (example: two points)
         lineRenderer.positionCount = 2;
         lineRenderer.SetPosition(0, gameObject.transform.position);  // Start point
-        lineRenderer.SetPosition(1, twin.transform.position);  // End point
+        lineRenderer.SetPosition(1, target.transform.position);  // End point
         lineRenderer.useWorldSpace = false;
         lineObject.transform.SetParent(gameObject.transform);
     }
 
+
+    public IEnumerator IE_FollowLine(Transform target)
+    {
+        GameObject point = new GameObject("Point");
+        point.transform.SetParent(transform);
+        lineRenderer.useWorldSpace = true;
+
+        while (true) 
+        {
+            lineRenderer.SetPosition(0, target.transform.position);
+            lineRenderer.SetPosition(1, gripEnd.transform.position);
+            yield return null;  
+        }
+    }
 
     
 
