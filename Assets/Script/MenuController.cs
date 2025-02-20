@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.Timeline;
 using UnityEngine.UI;
+using System.Threading.Tasks;
 
 public class MenuController : MonoBehaviour
 {
@@ -73,6 +74,7 @@ public class MenuController : MonoBehaviour
 
     public void PlayGame()
     {
+        Time.timeScale = 1f;
         if (selectedMusicData.musicAssets == null)
             return;
         canvasMenu.gameObject.SetActive(false);
@@ -84,5 +86,10 @@ public class MenuController : MonoBehaviour
     public void ExitGame()
     {
         Application.Quit();
+    }
+    
+    public void Option()
+    {
+        
     }
 }

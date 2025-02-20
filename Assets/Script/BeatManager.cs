@@ -8,6 +8,8 @@ using UnityEngine.Playables;
 using UnityEngine.SceneManagement;
 using UnityEngine.Timeline;
 using UnityEngine.UI;
+using UnityEngine.InputSystem.XR;
+using UnityEngine.XR.Interaction.Toolkit;
 using VRBeats;
 using static BeatManager;
 using static MenuController;
@@ -59,8 +61,10 @@ public class BeatManager : MonoBehaviour
 
     private void Awake()
     {
+        continueButton.onClick.AddListener(Continue);
         restartButton.onClick.AddListener(Restart);
         backToMenuButton.onClick.AddListener(BackToMenu);
+        backToMenuButtonNow.onClick.AddListener(BackToMenu);
         musicDirector = GetComponent<PlayableDirector>();
 
     }
@@ -130,10 +134,13 @@ public class BeatManager : MonoBehaviour
     [Header("Ending")]
     public GameObject endingPanel;
     public TMP_Text finalScorePanel;
+    public GameObject pausePanel;
     public GameObject normalScoreBoard;
 
     public Button restartButton;
     public Button backToMenuButton;
+    public Button backToMenuButtonNow;
+    public Button continueButton;
 
     public GameObject newHighScoreText;
 
@@ -182,16 +189,27 @@ public class BeatManager : MonoBehaviour
         
     }
 
-    private void OnDestroy()
+    private void DestroyAllObject(string tag)
     {
+        GameObject[] objects = GameObject.FindGameObjectsWithTag(tag);
+        foreach (GameObject obj in objects)
+        {
+            Destroy(obj);
+        }
     }
+
+    public void Continue(){
+
+        pausePanel.gameObject.SetActive(false);
+        Time.timeScale = 1f;
+    }
+
     public void Restart()
     {
-
-        
+        DestroyAllObject("NoteBlock");
         StartMusic();
         FindObjectsOfType<RayTracker>(true).ToList().ForEach(x => x.gameObject.SetActive(false));
-
+        Continue();
     }
 
     private void OnApplicationQuit()
@@ -207,10 +225,15 @@ public class BeatManager : MonoBehaviour
     }
     public void BackToMenu()
     {
+        DestroyAllObject("NoteBlock");
         normalScoreBoard.gameObject.SetActive(false);
         endingPanel.gameObject.SetActive(false);
         FindObjectOfType<MenuController>(true).canvasMenu.SetActive(true);
         FindObjectsOfType<MusicRow>(true).ToList().ForEach(x => x.ReloadData());
+    }
+
+    public void DisplayPauseMenu(){
+        
     }
 
 
@@ -219,6 +242,12 @@ public class BeatManager : MonoBehaviour
     public bool IsPlaying;
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.Space) && IsPlaying == true) 
+        {
+            pausePanel.gameObject.SetActive(true);
+            Time.timeScale = 0f;
+        }
+
         if (IsPlaying == false)
             return;
         musicTimeTMP.text = musicDirector.time.ToString("0.00");
@@ -288,4 +317,5 @@ public class BeatManager : MonoBehaviour
         NoteTimeWrapper wrapper = JsonUtility.FromJson<NoteTimeWrapper>(noteJsonToConvert);
         noteTimes = wrapper.data;
     }
+
 }

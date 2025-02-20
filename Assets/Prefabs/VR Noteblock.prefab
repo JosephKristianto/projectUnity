@@ -308,7 +308,7 @@ GameObject:
   - component: {fileID: 438706699478002145}
   m_Layer: 0
   m_Name: VR Noteblock
-  m_TagString: Untagged
+  m_TagString: NoteBlock
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -364,7 +364,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 939201127991985263}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2313028dd1647f34aa416b3fd68c6819, type: 3}
+  m_Script: {fileID: 11500000, guid: c2bc7102374dcfd48abe7fa9f192db34, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 3
@@ -386,7 +386,7 @@ MonoBehaviour:
   isCorrect: 0
   isGripped: 0
   lineMaterial: {fileID: 2100000, guid: de46141ea554a5e49be1ed27afb68f9a, type: 2}
-  lineColor: {r: 1, g: 0, b: 0, a: 1}
+  lineColor: {r: 1, g: 1, b: 1, a: 1}
   lineWidth: 0.05
 --- !u!54 &438706699478002145
 Rigidbody:
