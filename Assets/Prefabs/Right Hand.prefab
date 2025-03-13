@@ -11,7 +11,7 @@ PrefabInstance:
     - target: {fileID: 964620969855046338, guid: f0fa6af2bf3c07642810e8d8751b4f56,
         type: 3}
       propertyPath: m_Name
-      value: FuturisticGlove Variant
+      value: Right Hand
       objectReference: {fileID: 0}
     - target: {fileID: 4267262290095284433, guid: f0fa6af2bf3c07642810e8d8751b4f56,
         type: 3}
@@ -68,8 +68,31 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 88.113
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 8675353785638049770, guid: f0fa6af2bf3c07642810e8d8751b4f56, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 964620969855046338, guid: f0fa6af2bf3c07642810e8d8751b4f56,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8910435882195996317}
   m_SourcePrefab: {fileID: 100100000, guid: f0fa6af2bf3c07642810e8d8751b4f56, type: 3}
+--- !u!1 &2842289852423344599 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 964620969855046338, guid: f0fa6af2bf3c07642810e8d8751b4f56,
+    type: 3}
+  m_PrefabInstance: {fileID: 3031716561996890901}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &8910435882195996317
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2842289852423344599}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f7ff04352e8ea2a47b3c06048c69af32, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
