@@ -64,7 +64,6 @@ public class BeatManager : MonoBehaviour
         continueButton.onClick.AddListener(Continue);
         restartButton.onClick.AddListener(Restart);
         backToMenuButton.onClick.AddListener(BackToMenu);
-        backToMenuButtonNow.onClick.AddListener(BackToMenu);
         musicDirector = GetComponent<PlayableDirector>();
 
     }
@@ -207,7 +206,12 @@ public class BeatManager : MonoBehaviour
     public void Restart()
     {
         DestroyAllObject("NoteBlock");
-        StartMusic();
+        if (musicDirector != null)
+        {
+            musicDirector.Stop();
+            musicDirector.Evaluate(); // Update timeline ke frame awal
+            StartMusic();
+        };
         FindObjectsOfType<RayTracker>(true).ToList().ForEach(x => x.gameObject.SetActive(false));
         Continue();
     }

@@ -30,6 +30,7 @@ public class MenuController : MonoBehaviour
     public Transform container;
 
     public Button playButton;
+    public Button RestartButton;
     public GameObject canvasMenu;
 
     public MusicData selectedMusicData = null;
@@ -37,6 +38,7 @@ public class MenuController : MonoBehaviour
 
     private void Start()
     {
+        RestartButton.onClick.AddListener(RestartGame);
         playButton.onClick.AddListener(PlayGame);
         foreach (var item in musicDatas)
         {
@@ -71,6 +73,13 @@ public class MenuController : MonoBehaviour
         }
     }
 
+    public void RestartGame(){
+        FindObjectOfType<BeatManager>().noteSpawnTime = selectedMusicData.noteSpawnTime;
+        FindObjectOfType<BeatManager>().noteSpeed = selectedMusicData.noteSpeed;
+        FindObjectOfType<BeatManager>().musicDirector.playableAsset = selectedMusicData.musicAssets;
+        FindObjectOfType<BeatManager>().StartMusic();
+        Time.timeScale = 1f;
+    }
 
     public void PlayGame()
     {
